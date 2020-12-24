@@ -96,7 +96,7 @@ class FlareScrubberProvider extends ServiceProvider
                     return true;
                 }
             }
-        } elseif (isset($keys)) {
+        } elseif (isset($keyRegex)) {
             throw new \Exception('flare.sensitive_data.key_regex must be an array');
         }
 
@@ -107,7 +107,7 @@ class FlareScrubberProvider extends ServiceProvider
                     return true;
                 }
             }
-        } elseif (isset($keys)) {
+        } elseif (isset($valueRegex)) {
             throw new \Exception('flare.sensitive_data.value_regex must be an array');
         }
 
