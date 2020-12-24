@@ -1,0 +1,21 @@
+{
+    "name": "johnwilhite/laravel-flare-scrubber",
+    "description": "Request Data Scrubber for Laravel Flare Reporting",
+    "type": "laravel-package",
+    "require": {
+        "facade/ignition": "^2.0"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "FlareScrubber\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "FlareScrubber\\FlareScrubberProvider"
+            ]
+        }
+    }
+}
