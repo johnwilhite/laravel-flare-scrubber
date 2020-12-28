@@ -8,6 +8,11 @@ use Facade\Ignition\Facades\Flare;
 
 class FlareScrubberProvider extends ServiceProvider
 {
+
+    protected $keyList;
+    protected $keyRegexList;
+    protected $valueRegexList;
+
     /**
      * Bootstrap any application services.
      *
@@ -20,9 +25,9 @@ class FlareScrubberProvider extends ServiceProvider
 
             if (isset($context['request_data'])) {
                 $context['request_data'] = $this->filterSensitiveData($context['request_data']);
+                $report->group('request_data', $context['request_data']);
             }
 
-            $report->group('request_data', $context['request_data']);
             return $next($report);
         });
     }
@@ -45,6 +50,7 @@ class FlareScrubberProvider extends ServiceProvider
      */
     protected function filterSensitiveData(array $data) : array
     {
+        $this->setOptions();
         $this->arrayMapRecursive($data, function (&$value, $key) {
             if ($this->needsSanitizing($value, $key)) {
                 $value = config('flare.sensitive_data.sanitization_text') ?? '***SANITIZED***';
@@ -64,6 +70,7 @@ class FlareScrubberProvider extends ServiceProvider
      */
     protected function arrayMapRecursive(array &$arr, callable $fn) : void
     {
+        $this->setOptions();
         array_walk($arr, function (&$item, $key) use ($fn) {
             return is_array($item) && ! $this->needsSanitizing($item, $key)
                 ? $this->arrayMapRecursive($item, $fn)
@@ -80,37 +87,55 @@ class FlareScrubberProvider extends ServiceProvider
      */
     protected function needsSanitizing($value, $key) : bool
     {
+        if (isset($this->keyList) && in_array($key, $this->keyList, true)) {
+            return true;
+        }
+
+        if (isset($this->keyRegexList)) {
+            foreach ($this->keyRegexList as $regex) {
+                if (preg_match($regex, $key)) {
+                    return true;
+                }
+            }
+        }
+
+        if (isset($this->valueRegexList) && ! is_array($value)) {
+            foreach ($this->valueRegexList as $regex) {
+                if (preg_match($regex, $value)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Validate and set the options from config
+     *
+     * @return void
+     */
+    protected function setOptions()
+    {
         $keys = config('flare.sensitive_data.keys');
         if (is_array($keys)) {
-            if (in_array($key, $keys)) {
-                return true;
-            }
+            $this->keyList = $keys;
         } elseif (isset($keys)) {
             throw new \Exception('flare.sensitive_data.keys must be an array');
         }
 
         $keyRegex = config('flare.sensitive_data.key_regex');
         if (is_array($keyRegex)) {
-            foreach (config('flare.sensitive_data.key_regex') as $regex) {
-                if (preg_match($regex, $key)) {
-                    return true;
-                }
-            }
+            $this->keyRegexList = $keyRegex;
         } elseif (isset($keyRegex)) {
             throw new \Exception('flare.sensitive_data.key_regex must be an array');
         }
 
         $valueRegex = config('flare.sensitive_data.value_regex');
-        if (is_array($valueRegex) && ! is_array($value)) {
-            foreach (config('flare.sensitive_data.value_regex') as $regex) {
-                if (preg_match($regex, $value)) {
-                    return true;
-                }
-            }
+        if (is_array($valueRegex)) {
+            $this->valueRegexList = $valueRegex;
         } elseif (isset($valueRegex)) {
             throw new \Exception('flare.sensitive_data.value_regex must be an array');
         }
-
-        return false;
     }
 }
