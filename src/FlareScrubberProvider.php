@@ -3,8 +3,8 @@
 namespace FlareScrubber;
 
 use Illuminate\Support\ServiceProvider;
-use Facade\FlareClient\Report;
-use Facade\Ignition\Facades\Flare;
+use Spatie\FlareClient\Report;
+use Spatie\LaravelIgnition\Facades\Flare;
 
 class FlareScrubberProvider extends ServiceProvider
 {
