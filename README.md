@@ -1,4 +1,11 @@
-# laravel-flare-scrubber
+# This is handled natively by Flare now
+https://flareapp.io/blog/18-how-to-censor-sensitive-information-in-requests-to-flare
+
+
+
+
+------------------------------
+
 Request Data Scrubber for Laravel Flare Reporting
 
 Flare doesn't seem to provide any documentation on scrubbing sensitive data from requests before sending over errors.  This package is a simple service provider that allows a config to define what data should be sanitized.
