@@ -1,7 +1,7 @@
 # This is handled natively by Flare now
 https://flareapp.io/blog/18-how-to-censor-sensitive-information-in-requests-to-flare
 
-
+Though this package will recursively search requests for keys, which may be an improvement depending on the usecase.
 
 
 ------------------------------
