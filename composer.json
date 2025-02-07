@@ -16,6 +16,6 @@
         }
     },
     "require": {
-        "spatie/laravel-ignition": "^1.0"
+        "spatie/laravel-ignition": "^1.0|^2.0"
     }
 }
